@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="mark">◉</div>
+    <div>
+      <h1>TOKEN RADAR</h1>
+      <p class="tag">Every pre-token protocol that matters, ranked by what its token would be worth.</p>
+    </div>
+  </div>
+  <div class="meta" id="meta"></div>
+</header>
+
+<nav class="tabs">
+  <button id="tab-board" class="tab on" type="button">Pre-token board</button>
+  <button id="tab-live" class="tab" type="button">Already trading</button>
+  <button id="tab-method" class="tab" type="button">How the value is built</button>
+</nav>
+
+<main>
+  <section id="view-board">
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search name or slug…" aria-label="Search protocols">
+      <select id="cat" aria-label="Filter by category"></select>
+      <select id="status" aria-label="Filter by list">
+        <option value="all">All rows</option>
+        <option value="watchlist">Watchlist only</option>
+        <option value="early">Early finds only</option>
+      </select>
+      <select id="sort" aria-label="Sort board">
+        <option value="value">Sort: implied value</option>
+        <option value="tvl">Sort: TVL</option>
+        <option value="growth">Sort: 7-day change</option>
+        <option value="age">Sort: age</option>
+      </select>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="tablewrap">
+      <table id="board">
+        <thead><tr>
+          <th class="num">#</th><th>Protocol</th><th>Category</th>
+          <th class="num">TVL</th><th class="num">7d</th><th class="num">Age</th>
+          <th class="num">Implied value</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="note">Implied value is this radar's own claim from the snapshot's figures, never a market price. A protocol that records no token may still have one its DefiLlama record does not carry.</p>
+  </section>
+
+  <section id="view-detail" hidden>
+    <button id="back" class="back" type="button">← Back to the board</button>
+    <div id="detail"></div>
+  </section>
+
+  <section id="view-live" hidden>
+    <h2>Already trading — the market's own value, not a model</h2>
+    <p class="lede">These protocols record a token, so the board does not rank them. Their market cap is shown as DefiLlama records it, for contrast with the pre-token board above.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Protocol</th><th>Category</th><th class="num">TVL</th><th class="num">Market cap</th><th class="num">7d</th></tr></thead>
+        <tbody id="live-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="view-method" hidden>
+    <h2>How the value is built</h2>
+    <p class="lede">Every implied value follows from the snapshot's own figures. No protocol name is ever special-cased: the same function scores every row.</p>
+    <div class="formula">implied = TVL × sectorMultiple × growthMult × maturityMult × breadthMult</div>
+    <table class="method">
+      <thead><tr><th>Factor</th><th>What it is</th><th>Range</th></tr></thead>
+      <tbody>
+        <tr><td>sectorMultiple</td><td>Typical fully-diluted-value / TVL band for the protocol's category: prediction, launchpad, RWA and payments 0.42; Dex, derivatives, lending, CDP, basis and insurance 0.33; yield, farms, risk curators and allocators 0.26; restaking, liquid staking and bridges 0.22; everything else 0.28.</td><td>0.22 – 0.42</td></tr>
+        <tr><td>growthMult</td><td>1 + clamp(7-day TVL change, −80%, +200%) ÷ 100 × 0.6. Fast growers earn more; shrinkers earn less.</td><td>0.52 – 2.20</td></tr>
+        <tr><td>maturityMult</td><td>0.55 + min(age in days, 1460) ÷ 1460 × 0.45. A protocol that has run longer with no token has proven it can hold value; unknown age counts as 365 days.</td><td>0.55 – 1.00</td></tr>
+        <tr><td>breadthMult</td><td>1 + min(chains − 1, 5) × 0.025. Reach across more chains earns a little more.</td><td>1.00 – 1.125</td></tr>
+      </tbody>
+    </table>
+    <h3>How to farm a row</h3>
+    <p>Every row carries six steps: a fresh wallet, the category's core action with a concrete capital size, one qualifying action a week, a hold of 30–60 days, a check of the protocol's own points page, and a farm log. Each step states what it costs and how long it takes. Never pay to claim, and never follow a claim link from a chat or an ad.</p>
+    <h3>What the board is not</h3>
+    <p>It does not predict whether or when a protocol issues a token. It values the protocol as if its record stayed as it is, on the day the snapshot was taken.</p>
+  </section>
+</main>
+
+<footer>
+  <p>Source: DefiLlama public API, snapshot <span id="asof"></span> · Watchlist floor $50,000,000 TVL · Built by Token Radar for make.fun's token-radar-01 bounty.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
